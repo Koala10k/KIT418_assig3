@@ -1,0 +1,7 @@
+jclouds-core-1.9.0
+jclouds-slf4j-1.9.0
+rt
+openstack-nova-1.9.0
+openstack-keystone-1.9.0
+guava-16.0.1
+guice-3.0
