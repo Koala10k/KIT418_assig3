@@ -11,9 +11,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+import org.hyperic.sigar.OperatingSystem;
 import org.json.simple.JSONObject;
 
-import edu.utas.kit418.assig3.common.JCloudsNova;
+import edu.utas.kit418.assig3.common.Logger;
 import edu.utas.kit418.assig3.common.Message;
 
 public class Server {
@@ -28,6 +29,7 @@ public class Server {
 	private static boolean looping = true;
 	private static int taskNum;
 	private static int startingNodeNum;
+	private static boolean isWin32;
 
 	public static void main(String[] args) {
 		try {
@@ -39,6 +41,9 @@ public class Server {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+
+		OperatingSystem os = OperatingSystem.getInstance();
+		isWin32 = os.getName().equals("Win32");
 
 		startThread(new Thread(new Runnable() {
 
@@ -64,7 +69,7 @@ public class Server {
 				int id = client.getInputStream().read();
 				if (id == 1) { // 1: Client
 					ClientService c = new ClientService(client);
-					c.id = nextClientId;
+					c.id = nextClientId++;
 					addClient(c);
 					startThread(new Thread(c));
 				} else if (id == 2) { // 2: Node
@@ -130,7 +135,7 @@ public class Server {
 	}
 
 	private static void log(String msg) {
-		System.out.println("Server: " + msg);
+		Logger.log("Server: " + msg);
 	}
 
 	public static void startThread(Thread thread) {
@@ -206,7 +211,6 @@ public class Server {
 			newNode = (taskNum > (startingNodeNum + nodeList.size()) * 10);
 		}
 		if (newNode) {
-			log("taskNum:" + taskNum);
 			startNewNode();
 		}
 	}
@@ -217,12 +221,14 @@ public class Server {
 		synchronized (nodeList) {
 			localNode = (nodeList.size() == 0);
 		}
-		//DEBUG
-		localNode = true;
 		if (localNode) {
 			log("starting a local node...");
 			try {
-				new ProcessBuilder("cmd", "/c", "start", "StartNode.cmd").start();
+				if (isWin32)
+					new ProcessBuilder("cmd", "/c", "start", "StartNode.cmd").start();
+				else {
+					new ProcessBuilder("sh", "./start_node.sh", "127.0.0.1", "4444").start();
+				}
 			} catch (IOException e) {
 				log("fail to start a local node");
 				startingNumDown1();
@@ -233,7 +239,7 @@ public class Server {
 		if (!localNode) {
 			log("starting a remote node...");
 			try {
-				JCloudsNova.createNewNode();
+				JCloudsNova.createNewNode(null);
 			} catch (IOException e) {
 				log("fail to start a remote node");
 				startingNumDown1();
@@ -243,8 +249,8 @@ public class Server {
 	}
 
 	private static void startingNumDown1() {
-		if(startingNodeNum > 0)
-		startingNodeNum--;
+		if (startingNodeNum > 0)
+			startingNodeNum--;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -271,9 +277,7 @@ public class Server {
 		synchronized (runningTaskList) {
 			for (int i = 0; i < runningTaskList.size(); i++) {
 				Message m = runningTaskList.get(i);
-				if (m.type == 1) {
-					jsonTask.put(m.content + "(" + m.msgID + ")", "running");
-				}
+				jsonTask.put(m.content + "(" + m.msgID + ")", "running");
 			}
 		}
 		json.put("taskInfo", jsonTask.toJSONString());
@@ -284,6 +288,7 @@ public class Server {
 				jsonN.put("status", node.nodeStatus);
 				jsonN.put("cpu%", node.info == null ? "Unknown" : node.info.jsonCpuInfo());
 				jsonN.put("working on", node.jsonWorkingTask());
+				jsonN.put("nodeIP", node.remoteSocketAddr);
 				jsonNode.put(node.id, jsonN.toJSONString());
 			}
 		}
@@ -298,7 +303,7 @@ public class Server {
 		msg.content = json.toJSONString();
 	}
 
-	public synchronized static void removeTask(Message msg) {
+	public synchronized static void stopTask(Message msg) {
 		synchronized (runningTaskList) {
 			for (Message m : runningTaskList) {
 				if (m.msgID.toString().equals(msg.content)) {
@@ -314,6 +319,7 @@ public class Server {
 					inMsgList.remove(m);
 					msg.answer = msg.content;
 					msg.content = "Task(" + msg.content + ")" + " has been removed";
+					removeTasks(1);
 					return;
 				}
 			}
@@ -340,8 +346,10 @@ public class Server {
 		evulatePressure();
 	}
 
-	public synchronized static void removeATask() {
-		taskNum--;
+	public synchronized static void removeTasks(int i) {
+		taskNum-=i;
+		if(taskNum<0)
+		Logger.log("Server: taskNum < 0");
 	}
 
 	public synchronized static NodeService findRelaxingNode(NodeService def) {

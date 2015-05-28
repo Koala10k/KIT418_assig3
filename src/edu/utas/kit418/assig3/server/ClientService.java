@@ -4,13 +4,16 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 
+import edu.utas.kit418.assig3.common.Logger;
 import edu.utas.kit418.assig3.common.Message;
 
 public class ClientService implements Runnable {
 
 	public int id;
-	public String clientStatus = "offline"; 
+	public String clientStatus = "offline";
 	// active(unauthorized)
 	// active(authorized)
 	// dead
@@ -22,6 +25,7 @@ public class ClientService implements Runnable {
 	private boolean authenticated;
 	public static Object[] sync = new Object[0];
 	private boolean looping = true;
+	private String clientId;
 
 	public ClientService(Socket client) {
 		c = client;
@@ -56,6 +60,7 @@ public class ClientService implements Runnable {
 			die();
 		}
 		clientStatus = "active(authorized)";
+		log("ClientId: " + clientId + " has been authenticated");
 		Server.startThread(new Thread(new Runnable() { // Receiver
 					@Override
 					public void run() {
@@ -68,9 +73,11 @@ public class ClientService implements Runnable {
 									e.printStackTrace();
 								}
 								if (msg.type == 1) {
+									if (msg.expiredIn < 0)
+										msg.expiredIn = Double.MAX_VALUE;
 									Server.addTaskMsgByPriority(msg);
 									synchronized (NodeService.sync) {
-										NodeService.sync.notifyAll();
+										NodeService.sync.notify();
 									}
 								} else if (msg.type == 5 || msg.type == 9 || msg.type == 11) {
 									synchronized (Server.outMsgList) {
@@ -116,7 +123,7 @@ public class ClientService implements Runnable {
 				msg.type = 10;
 				sendMsg(msg);
 			} else if (msg.type == 11) {
-				Server.removeTask(msg);
+				Server.stopTask(msg);
 				msg.type = 12;
 				sendMsg(msg);
 			} else {
@@ -140,7 +147,7 @@ public class ClientService implements Runnable {
 	private Message seekMyMsg() {
 		synchronized (Server.outMsgList) {
 			for (Message msg : Server.outMsgList) {
-				if (msg.type == 2 || (msg.type != 2 && msg.from.equals(remoteSocketAddr))) {
+				if (msg.owner.equals(clientId)) {
 					Server.outMsgList.remove(msg);
 					return msg;
 				}
@@ -167,11 +174,13 @@ public class ClientService implements Runnable {
 			msg = (Message) ois.readObject();
 			if (msg.type == 7 && msg.content.equals("admin/admin")) {
 				msg.content = "Success";
+				clientId = msg.answer;
 				authenticated = true;
 			} else {
 				msg.content = "Failed";
 				authenticated = false;
 			}
+			msg.type = 13;
 			sendMsg(msg);
 			if (authenticated)
 				break;
@@ -186,9 +195,47 @@ public class ClientService implements Runnable {
 		}
 		clientStatus = "dead";
 		Server.removeClient(this);
+		clearClientTasks();
 	}
-	
-	private void log(String msg){
-		System.out.println("ClientService"+id+": "+msg);
+
+	private void clearClientTasks() {
+		List<Message> tmp = new ArrayList<Message>();
+		synchronized (Server.inMsgList) {
+			for (Message msg : Server.inMsgList) {
+				if (msg.type == 1 && msg.owner.equals(clientId)) {
+					tmp.add(msg);
+					log("will rmeove Client(" + clientId + ")'s waiting Task(" + msg.msgID + ")");
+				}
+			}
+			Server.inMsgList.removeAll(tmp);
+			Server.removeTasks(tmp.size());
+			log("removed " + tmp.size() + " waiting tasks");
+		}
+		tmp.clear();
+		synchronized (Server.outMsgList) {
+			for (Message msg : Server.outMsgList) {
+				if (msg.type == 2 && msg.owner.equals(clientId)) {
+					tmp.add(msg);
+					log("will rmeove Client(" + clientId + ")'s resulting Task(" + msg.msgID + ")");
+				}
+			}
+			Server.outMsgList.removeAll(tmp);
+			log("removed " + tmp.size() + " resulting tasks");
+		}
+		tmp.clear();
+		synchronized (Server.runningTaskList) {
+			for (Message msg : Server.runningTaskList) {
+				if (msg.type == 1 && msg.owner.equals(clientId)) {
+					tmp.add(msg);
+					log("will remove Client(" + clientId + ")'s running Task(" + msg.msgID + ")");
+				}
+			}
+			Server.runningTaskList.removeAll(tmp);
+			log("removed " + tmp.size() + " running tasks");
+		}
+	}
+
+	private void log(String msg) {
+		Logger.log("ClientService" + id + ": " + msg);
 	}
 }

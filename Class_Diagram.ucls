@@ -3,7 +3,7 @@
   realizations="true" associations="true" dependencies="false" nesting-relationships="true">  
   <class id="1" language="java" name="edu.utas.kit418.assig3.server.ClientService" project="KIT418_assig3_" 
     file="/KIT418_assig3_/src/edu/utas/kit418/assig3/server/ClientService.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="-1" width="-1" x="121" y="340"/>    
+    <position height="-1" width="-1" x="129" y="231"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="true" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
       <attributes public="true" package="true" protected="true" private="true" static="true"/>      
@@ -37,16 +37,7 @@
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <class id="5" language="java" name="edu.utas.kit418.assig3.common.JCloudsNova" project="KIT418_assig3_" 
-    file="/KIT418_assig3_/src/edu/utas/kit418/assig3/common/JCloudsNova.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="-1" width="-1" x="385" y="223"/>    
-    <display autosize="true" stereotype="true" package="true" initial-value="true" signature="true" 
-      sort-features="false" accessors="true" visibility="true">      
-      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
-      <operations public="true" package="true" protected="true" private="true" static="true"/>    
-    </display>  
-  </class>  
-  <class id="6" language="java" name="edu.utas.kit418.assig3.node.ThreadManager" project="KIT418_assig3_" 
+  <class id="5" language="java" name="edu.utas.kit418.assig3.node.ThreadManager" project="KIT418_assig3_" 
     file="/KIT418_assig3_/src/edu/utas/kit418/assig3/node/ThreadManager.java" binary="false" corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="900" y="487"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="true" signature="true" 
@@ -55,25 +46,25 @@
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <class id="7" language="java" name="edu.utas.kit418.assig3.server.NodeService" project="KIT418_assig3_" 
+  <class id="6" language="java" name="edu.utas.kit418.assig3.server.NodeService" project="KIT418_assig3_" 
     file="/KIT418_assig3_/src/edu/utas/kit418/assig3/server/NodeService.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="-1" width="-1" x="333" y="606"/>    
+    <position height="-1" width="-1" x="317" y="569"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="true" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
       <attributes public="true" package="true" protected="true" private="true" static="true"/>      
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <class id="8" language="java" name="edu.utas.kit418.assig3.common.NodeInfo" project="KIT418_assig3_" 
+  <class id="7" language="java" name="edu.utas.kit418.assig3.common.NodeInfo" project="KIT418_assig3_" 
     file="/KIT418_assig3_/src/edu/utas/kit418/assig3/common/NodeInfo.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="-1" width="-1" x="207" y="957"/>    
+    <position height="-1" width="-1" x="294" y="945"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="true" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
       <attributes public="true" package="true" protected="true" private="true" static="true"/>      
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <class id="9" language="java" name="edu.utas.kit418.assig3.node.ThreadWorker" project="KIT418_assig3_" 
+  <class id="8" language="java" name="edu.utas.kit418.assig3.node.ThreadWorker" project="KIT418_assig3_" 
     file="/KIT418_assig3_/src/edu/utas/kit418/assig3/node/ThreadWorker.java" binary="false" corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="1275" y="449"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="true" signature="true" 
@@ -82,16 +73,16 @@
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <class id="10" language="java" name="edu.utas.kit418.assig3.client.Client" project="KIT418_assig3_" 
+  <class id="9" language="java" name="edu.utas.kit418.assig3.client.Client" project="KIT418_assig3_" 
     file="/KIT418_assig3_/src/edu/utas/kit418/assig3/client/Client.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="-1" width="-1" x="1195" y="863"/>    
-    <display autosize="true" stereotype="true" package="true" initial-value="true" signature="true" 
+    <position height="741" width="284" x="1432" y="216"/>    
+    <display autosize="false" stereotype="true" package="true" initial-value="true" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
       <attributes public="true" package="true" protected="true" private="true" static="true"/>      
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <class id="11" language="java" name="edu.utas.kit418.assig3.node.SysMonitor" project="KIT418_assig3_" 
+  <class id="10" language="java" name="edu.utas.kit418.assig3.node.SysMonitor" project="KIT418_assig3_" 
     file="/KIT418_assig3_/src/edu/utas/kit418/assig3/node/SysMonitor.java" binary="false" corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="1235" y="159"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="true" signature="true" 
@@ -100,164 +91,243 @@
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
+  <class id="11" language="java" name="edu.utas.kit418.assig3.client.GUI" project="KIT418_assig3_" 
+    file="/KIT418_assig3_/src/edu/utas/kit418/assig3/client/GUI.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="675" width="235" x="1764" y="213"/>    
+    <display autosize="false" stereotype="true" package="true" initial-value="true" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
   <association id="12">    
-    <bendpoint x="553" y="687"/>    
-    <end type="SOURCE" refId="2" navigable="false">      
-      <attribute id="13" name="runningTaskList">        
-        <position height="18" width="85" x="497" y="636"/>      
+    <end type="SOURCE" refId="5" navigable="false">      
+      <attribute id="13" name="instance">        
+        <position height="0" width="0" x="0" y="0"/>      
       </attribute>      
-      <multiplicity id="14" minimum="0" maximum="2147483647"/>    
+      <multiplicity id="14" minimum="0" maximum="1">        
+        <position height="0" width="0" x="0" y="0"/>      
+      </multiplicity>    
     </end>    
-    <end type="TARGET" refId="3" navigable="true"/>    
+    <end type="TARGET" refId="5" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
   <association id="15">    
-    <bendpoint x="714" y="694"/>    
     <end type="SOURCE" refId="2" navigable="false">      
-      <attribute id="16" name="inMsgList">        
-        <position height="18" width="55" x="680" y="646"/>      
+      <attribute id="16" name="nodeList">        
+        <position height="0" width="0" x="-16" y="-37"/>      
       </attribute>      
-      <multiplicity id="17" minimum="0" maximum="2147483647"/>    
+      <multiplicity id="17" minimum="0" maximum="2147483647">        
+        <position height="0" width="0" x="-16" y="-37"/>      
+      </multiplicity>    
     </end>    
-    <end type="TARGET" refId="3" navigable="true"/>    
+    <end type="TARGET" refId="6" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
   <association id="18">    
-    <end type="SOURCE" refId="6" navigable="false">      
-      <attribute id="19" name="outMsgList">        
-        <position height="18" width="62" x="767" y="703"/>      
+    <bendpoint x="931" y="276"/>    
+    <end type="SOURCE" refId="4" navigable="false">      
+      <attribute id="19" name="mgr">        
+        <position height="0" width="0" x="0" y="0"/>      
       </attribute>      
-      <multiplicity id="20" minimum="0" maximum="2147483647"/>    
+      <multiplicity id="20" minimum="0" maximum="1">        
+        <position height="0" width="0" x="0" y="0"/>      
+      </multiplicity>    
     </end>    
-    <end type="TARGET" refId="3" navigable="true"/>    
+    <end type="TARGET" refId="5" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
   <association id="21">    
-    <end type="SOURCE" refId="11" navigable="false">      
-      <attribute id="22" name="instance"/>      
-      <multiplicity id="23" minimum="0" maximum="1"/>    
+    <end type="SOURCE" refId="10" navigable="false">      
+      <attribute id="22" name="mgr">        
+        <position height="0" width="0" x="0" y="0"/>      
+      </attribute>      
+      <multiplicity id="23" minimum="0" maximum="1">        
+        <position height="0" width="0" x="0" y="0"/>      
+      </multiplicity>    
     </end>    
-    <end type="TARGET" refId="11" navigable="true"/>    
+    <end type="TARGET" refId="5" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
   <association id="24">    
+    <bendpoint x="553" y="687"/>    
     <end type="SOURCE" refId="2" navigable="false">      
-      <attribute id="25" name="nodeList"/>      
-      <multiplicity id="26" minimum="0" maximum="2147483647"/>    
-    </end>    
-    <end type="TARGET" refId="7" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
-  <association id="27">    
-    <bendpoint x="886" y="755"/>    
-    <end type="SOURCE" refId="6" navigable="false">      
-      <attribute id="28" name="inMsgList">        
-        <position height="18" width="55" x="865" y="727"/>      
+      <attribute id="25" name="runningTaskList">        
+        <position height="18" width="85" x="497" y="636"/>      
       </attribute>      
-      <multiplicity id="29" minimum="0" maximum="2147483647"/>    
+      <multiplicity id="26" minimum="0" maximum="2147483647">        
+        <position height="0" width="0" x="0" y="0"/>      
+      </multiplicity>    
     </end>    
     <end type="TARGET" refId="3" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
+  <association id="27">    
+    <end type="SOURCE" refId="10" navigable="false">      
+      <attribute id="28" name="instance">        
+        <position height="0" width="0" x="0" y="0"/>      
+      </attribute>      
+      <multiplicity id="29" minimum="0" maximum="1">        
+        <position height="0" width="0" x="0" y="0"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="10" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
   <association id="30">    
-    <end type="SOURCE" refId="7" navigable="false">      
-      <attribute id="31" name="workingList"/>      
-      <multiplicity id="32" minimum="0" maximum="2147483647"/>    
+    <end type="SOURCE" refId="9" navigable="false">      
+      <attribute id="31" name="msgList">        
+        <position height="0" width="0" x="0" y="0"/>      
+      </attribute>      
+      <multiplicity id="32" minimum="0" maximum="2147483647">        
+        <position height="0" width="0" x="0" y="0"/>      
+      </multiplicity>    
     </end>    
     <end type="TARGET" refId="3" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
   <association id="33">    
-    <end type="SOURCE" refId="2" navigable="false">      
-      <attribute id="34" name="outMsgList">        
-        <position height="18" width="62" x="595" y="690"/>      
+    <end type="SOURCE" refId="3" navigable="false">      
+      <attribute id="34" name="nodeInfo">        
+        <position height="0" width="0" x="87" y="-12"/>      
       </attribute>      
-      <multiplicity id="35" minimum="0" maximum="2147483647"/>    
+      <multiplicity id="35" minimum="0" maximum="1">        
+        <position height="0" width="0" x="87" y="-12"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="7" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="36">    
+    <end type="SOURCE" refId="4" navigable="false">      
+      <attribute id="37" name="sysMonitor">        
+        <position height="0" width="0" x="0" y="0"/>      
+      </attribute>      
+      <multiplicity id="38" minimum="0" maximum="1">        
+        <position height="0" width="0" x="0" y="0"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="10" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="39">    
+    <end type="SOURCE" refId="2" navigable="false">      
+      <attribute id="40" name="clientList">        
+        <position height="0" width="0" x="8" y="-109"/>      
+      </attribute>      
+      <multiplicity id="41" minimum="0" maximum="2147483647">        
+        <position height="0" width="0" x="8" y="-109"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="1" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="42">    
+    <end type="SOURCE" refId="5" navigable="false">      
+      <attribute id="43" name="outMsgList">        
+        <position height="18" width="62" x="767" y="703"/>      
+      </attribute>      
+      <multiplicity id="44" minimum="0" maximum="2147483647">        
+        <position height="0" width="0" x="0" y="0"/>      
+      </multiplicity>    
     </end>    
     <end type="TARGET" refId="3" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="36">    
-    <bendpoint x="113" y="705"/>    
-    <end type="SOURCE" refId="7" navigable="false">      
-      <attribute id="37" name="info"/>      
-      <multiplicity id="38" minimum="0" maximum="1"/>    
+  <association id="45">    
+    <end type="SOURCE" refId="5" navigable="false">      
+      <attribute id="46" name="workers">        
+        <position height="0" width="0" x="0" y="0"/>      
+      </attribute>      
+      <multiplicity id="47" minimum="0" maximum="2147483647">        
+        <position height="0" width="0" x="0" y="0"/>      
+      </multiplicity>    
     </end>    
     <end type="TARGET" refId="8" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="39">    
-    <end type="SOURCE" refId="10" navigable="false">      
-      <attribute id="40" name="msgList"/>      
-      <multiplicity id="41" minimum="0" maximum="2147483647"/>    
+  <association id="48">    
+    <bendpoint x="1110" y="528"/>    
+    <end type="SOURCE" refId="8" navigable="false">      
+      <attribute id="49" name="mgr">        
+        <position height="0" width="0" x="0" y="0"/>      
+      </attribute>      
+      <multiplicity id="50" minimum="0" maximum="1">        
+        <position height="0" width="0" x="0" y="0"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="5" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="51">    
+    <bendpoint x="886" y="755"/>    
+    <end type="SOURCE" refId="5" navigable="false">      
+      <attribute id="52" name="inMsgList">        
+        <position height="18" width="55" x="865" y="727"/>      
+      </attribute>      
+      <multiplicity id="53" minimum="0" maximum="2147483647">        
+        <position height="0" width="0" x="0" y="0"/>      
+      </multiplicity>    
     </end>    
     <end type="TARGET" refId="3" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="42">    
-    <end type="SOURCE" refId="4" navigable="false">      
-      <attribute id="43" name="sysMonitor"/>      
-      <multiplicity id="44" minimum="0" maximum="1"/>    
+  <association id="54">    
+    <bendpoint x="714" y="694"/>    
+    <end type="SOURCE" refId="2" navigable="false">      
+      <attribute id="55" name="inMsgList">        
+        <position height="18" width="55" x="685" y="667"/>      
+      </attribute>      
+      <multiplicity id="56" minimum="0" maximum="2147483647">        
+        <position height="0" width="0" x="0" y="0"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="3" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="57">    
+    <end type="SOURCE" refId="6" navigable="false">      
+      <attribute id="58" name="workingList">        
+        <position height="0" width="0" x="0" y="0"/>      
+      </attribute>      
+      <multiplicity id="59" minimum="0" maximum="2147483647">        
+        <position height="0" width="0" x="0" y="0"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="3" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="60">    
+    <bendpoint x="113" y="705"/>    
+    <end type="SOURCE" refId="6" navigable="false">      
+      <attribute id="61" name="info">        
+        <position height="0" width="0" x="87" y="-12"/>      
+      </attribute>      
+      <multiplicity id="62" minimum="0" maximum="1">        
+        <position height="0" width="0" x="87" y="-12"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="7" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="63">    
+    <end type="SOURCE" refId="9" navigable="false">      
+      <attribute id="64" name="gui"/>      
+      <multiplicity id="65" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="11" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="45">    
-    <end type="SOURCE" refId="11" navigable="false">      
-      <attribute id="46" name="mgr"/>      
-      <multiplicity id="47" minimum="0" maximum="1"/>    
-    </end>    
-    <end type="TARGET" refId="6" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
-  <association id="48">    
-    <end type="SOURCE" refId="6" navigable="false">      
-      <attribute id="49" name="instance"/>      
-      <multiplicity id="50" minimum="0" maximum="1"/>    
-    </end>    
-    <end type="TARGET" refId="6" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
-  <association id="51">    
-    <end type="SOURCE" refId="6" navigable="false">      
-      <attribute id="52" name="workers"/>      
-      <multiplicity id="53" minimum="0" maximum="2147483647"/>    
-    </end>    
-    <end type="TARGET" refId="9" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
-  <association id="54">    
-    <bendpoint x="931" y="276"/>    
-    <end type="SOURCE" refId="4" navigable="false">      
-      <attribute id="55" name="mgr"/>      
-      <multiplicity id="56" minimum="0" maximum="1"/>    
-    </end>    
-    <end type="TARGET" refId="6" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
-  <association id="57">    
-    <end type="SOURCE" refId="3" navigable="false">      
-      <attribute id="58" name="nodeInfo"/>      
-      <multiplicity id="59" minimum="0" maximum="1"/>    
-    </end>    
-    <end type="TARGET" refId="8" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
-  <association id="60">    
-    <bendpoint x="1110" y="528"/>    
-    <end type="SOURCE" refId="9" navigable="false">      
-      <attribute id="61" name="mgr"/>      
-      <multiplicity id="62" minimum="0" maximum="1"/>    
-    </end>    
-    <end type="TARGET" refId="6" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
-  <association id="63">    
+  <association id="66">    
     <end type="SOURCE" refId="2" navigable="false">      
-      <attribute id="64" name="clientList"/>      
-      <multiplicity id="65" minimum="0" maximum="2147483647"/>    
+      <attribute id="67" name="outMsgList">        
+        <position height="18" width="62" x="595" y="690"/>      
+      </attribute>      
+      <multiplicity id="68" minimum="0" maximum="2147483647">        
+        <position height="0" width="0" x="0" y="0"/>      
+      </multiplicity>    
     </end>    
-    <end type="TARGET" refId="1" navigable="true"/>    
+    <end type="TARGET" refId="3" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
   <classifier-display autosize="true" stereotype="true" package="true" initial-value="true" signature="true" 

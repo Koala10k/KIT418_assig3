@@ -9,6 +9,7 @@ import java.util.List;
 
 import org.json.simple.JSONObject;
 
+import edu.utas.kit418.assig3.common.Logger;
 import edu.utas.kit418.assig3.common.Message;
 import edu.utas.kit418.assig3.common.NodeInfo;
 
@@ -20,7 +21,7 @@ public class NodeService implements Runnable {
 	public Socket c;
 	private ObjectInputStream ois;
 	private ObjectOutputStream oos;
-	private String remoteSocketAddr;
+	public String remoteSocketAddr;
 	private String localSocketAddr;
 	public int idleNodeThread;
 	private List<Message> workingList = new ArrayList<Message>();
@@ -57,17 +58,25 @@ public class NodeService implements Runnable {
 							try {
 								Message msg = (Message) ois.readObject();
 								if (msg.type == 2) {
+									boolean throwMsg = true;
 									synchronized (Server.runningTaskList) {
-										Server.runningTaskList.remove(msg);
+										if (Server.runningTaskList.contains(msg)) {
+											Server.runningTaskList.remove(msg);
+											throwMsg = false;
+										}
 									}
 									synchronized (workingList) {
 										workingList.remove(msg);
 									}
-									synchronized (Server.outMsgList) {
-										Server.outMsgList.add(msg);
-									}
-									synchronized (ClientService.sync) {
-										ClientService.sync.notifyAll();
+									if (!throwMsg) {
+										synchronized (Server.outMsgList) {
+											Server.outMsgList.add(msg);
+										}
+										synchronized (ClientService.sync) {
+											ClientService.sync.notifyAll();
+										}
+									} else {
+										log("throwed away a task result(" + msg.msgID + ")");
 									}
 								} else if (msg.type == 3) {
 									synchronized (Server.inMsgList) {
@@ -116,7 +125,7 @@ public class NodeService implements Runnable {
 				nodeStatus = msg.nodeInfo.status;
 				info = msg.nodeInfo;
 				presIdx = info.presIdx;
-				log("PerfInfo: " + msg.nodeInfo.toJsonString());
+				log(msg.nodeInfo.toJsonString(), true);
 			} else if (msg.type == 3) {
 				nodeStatus = "startup";
 			} else if (msg.type == 4) {
@@ -146,25 +155,24 @@ public class NodeService implements Runnable {
 	private Message seekMyMsg() {
 		// DEBUG
 		if (id == 0)
-			presIdx = 1000;
+			presIdx = 100;
 		NodeService node = Server.findRelaxingNode(idleNodeThread > 0 ? this : null);
 		Message toOtherMsg = null;
 		synchronized (Server.inMsgList) {
 			for (Message msg : Server.inMsgList) {
 				if (msg.type == 1) {
-					// DEBUG
 					if (node == null) {
 						log("all nodes are busy!!!");
 						break;
 					} else if (node == this) {
-						Server.removeATask();
+						Server.removeTasks(1);
 						Server.inMsgList.remove(msg);
-						log("assign a task to itself");
+						log("assign a task(" + msg.msgID + ") to itself");
 						return msg;
 					} else {
-						Server.removeATask();
+						Server.removeTasks(1);
 						Server.inMsgList.remove(msg);
-						log("assign a task to Node" + node.id + "(pressure: " + node.presIdx + ")");
+						log("assign a task(" + msg.msgID + ") to Node" + node.id + "(pressure: " + node.presIdx + ")");
 						toOtherMsg = msg;
 						break;
 					}
@@ -214,19 +222,16 @@ public class NodeService implements Runnable {
 	private void rescheduleTask() {
 		List<Message> tmp = new ArrayList<Message>();
 		synchronized (workingList) {
-			for (Message msg : workingList)
+			for (Message msg : workingList) {
 				tmp.add(msg);
+				log("task(" + msg.msgID + ") will be re-scheduled");
+			}
 			workingList.clear();
 		}
-		if (tmp.size() > 0) {
-			for (Message task : tmp) {
-				synchronized (Server.runningTaskList) {
-					Server.runningTaskList.remove(task);
-				}
-				Server.addTaskMsgByPriority(task);
-				log("task(" + task.msgID + ") has been re-scheduled");
-			}
+		synchronized (Server.runningTaskList) {
+			Server.runningTaskList.removeAll(tmp);
 		}
+		log(tmp.size() + " task(s) have been re-scheduled");
 	}
 
 	@SuppressWarnings("unchecked")
@@ -241,7 +246,11 @@ public class NodeService implements Runnable {
 		return json.toJSONString();
 	}
 
+	private void log(String msg, boolean inline) {
+		Logger.log("NodeService" + id + ": " + msg, inline);
+	}
+
 	private void log(String msg) {
-		System.out.println("NodeService" + id + ": " + msg);
+		log(msg, false);
 	}
 }

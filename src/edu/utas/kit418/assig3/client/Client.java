@@ -7,10 +7,12 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.UUID;
 
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
+import edu.utas.kit418.assig3.common.Logger;
 import edu.utas.kit418.assig3.common.Message;
 
 public class Client {
@@ -18,45 +20,55 @@ public class Client {
 	private static String localSocketAddr;
 	private static String remoteSocketAddr;
 	private static List<Message> msgList = new ArrayList<Message>();
-	private static Object[] sync = new Object[0];
 	private static Socket s;
 	private static ObjectInputStream ois;
 	private static ObjectOutputStream oos;
 	private static boolean looping = true;
+	static boolean guiRunning = true;
 	private static Scanner sc = new Scanner(System.in);
 	private static int runningThreadNum = 3;
 	private static GUI gui;
+	private static String myId = UUID.randomUUID().toString();
+	public static final String IPADDRESS_PATTERN = "^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." + "([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." + "([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\."
+			+ "([01]?\\d\\d?|2[0-4]\\d|25[0-5])$";
+	private static int serverPort;
+	private static String serverIP;
+	private static String authStr;
+	private static String[] parameters;
+	public static boolean authed;
+	private static Object[] dyingSync = new Object[0];
 
 	public static void main(String[] args) {
 		// ip port username password
-		// DEBUG: n1: "144.6.225.0"
-//		 args = new String[] { "127.0.0.1", "4444", "admin", "admin" };
-		args = new String[] { "104.199.134.113", "4444", "admin", "admin" };
+		// nectar-n1: "144.6.225.0"
+		// DEBUG
+		gui = new GUI();
+		gui.setVisible(true);
 
-		if (args.length != 4) {
-			System.err.println("Invaid args");
-			System.exit(1);
+		parameters = args;
+		while (guiRunning && !retrieveArgs(parameters)) {
+			gui.promptErr("Invalid Args");
 		}
 
-		int serverPort = 0;
-		try {
-			serverPort = Integer.parseInt(args[1]);
-		} catch (NumberFormatException e3) {
-			System.err.println("Invaid args");
-			System.exit(1);
+		boolean connected = false;
+		while (guiRunning && !connected) {
+			try {
+				s = new Socket(serverIP, serverPort);
+				connected = true;
+			} catch (IOException e1) {
+				System.err.println("Cannot connect to " + serverIP + ":" + serverPort);
+				gui.promptErr("Connecting failed");
+			}
 		}
-		String serverIP = args[0];
-		String authStr = args[2] + "/" + args[3];
 
-		try {
-			s = new Socket(serverIP, serverPort);
-		} catch (IOException e1) {
-			System.err.println("Cannot connect to " + serverIP + ":" + serverPort);
-			System.exit(1);
+		if (!guiRunning) {
+			goToDie();
+			System.exit(0);
 		}
+
 		getAddr();
 		try {
-			s.getOutputStream().write(1);// 1: Client
+			s.getOutputStream().write(1);
 			s.getOutputStream().flush();
 		} catch (IOException e1) {
 			e1.printStackTrace();
@@ -78,27 +90,24 @@ public class Client {
 					try {
 						msg = (Message) ois.readObject();
 					} catch (IOException e) {
-						System.out.println("Error: Connection lost");
-						looping = false;
-						threadExit("Client Network Producer");
-						synchronized (sync) {
-							sync.notify();
-						}
-						return;
+						Logger.log("Error: Connection lost");
+						goToDie();
+						break;
 					} catch (ClassNotFoundException e) {
 						e.printStackTrace();
 					}
-					if (msg.type == 2 || msg.type == 6 || msg.type == 7 || msg.type == 8 || msg.type == 10 || msg.type == 12) {
+					if (msg.type == 2 || msg.type == 6 || msg.type == 7 || msg.type == 8 || msg.type == 10 || msg.type == 12 || msg.type == 13) {
 						synchronized (msgList) {
 							msgList.add(msg);
 						}
-						synchronized (sync) {
-							sync.notify();
+						synchronized (Client.class) {
+							Client.class.notify();
 						}
 					} else {
 						System.err.println("Client received(Network) an invlid msg " + msg.type);
 					}
 				}
+				threadExit("Client Network Producer");
 			}
 		}).start();
 
@@ -123,26 +132,24 @@ public class Client {
 						msg.type = 1;
 						msg.content = cmd;
 					}
-					msg.owner = localSocketAddr;
+					msg.owner = myId;
 					synchronized (msgList) {
 						msgList.add(msg);
 					}
-					synchronized (sync) {
-						sync.notify();
+					synchronized (Client.class) {
+						Client.class.notify();
 					}
 				}
 			}
 		});
 		cmdListner.start();
 
-		gui = new GUI();
-		gui.setVisible(true);
 		while (looping) { // Consumer
 			Message msg = seekMsg();
 			if (msg == null) {
-				synchronized (sync) {
+				synchronized (Client.class) {
 					try {
-						sync.wait();
+						Client.class.wait();
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
@@ -161,10 +168,22 @@ public class Client {
 			} else if (msg.type == 6) {
 				msg.content = authStr;
 				msg.type = 7;
-				msg.owner = localSocketAddr;
+				msg.answer = myId;
 				sendMsg(msg);
-			} else if (msg.type == 7) {
-				System.out.println("Login " + msg.content);
+			} else if (msg.type == 13) {
+				if (msg.content.equals("Success")) {
+					gui.authenticated(true);
+					authed = true;
+				} else {
+					gui.authenticated(false);
+					authed = false;
+					retrieveArgs(parameters);
+					msg.content = authStr;
+					msg.type = 7;
+					msg.answer = myId;
+					sendMsg(msg);
+				}
+				Logger.log("Login " + msg.content);
 			} else if (msg.type == 10) {
 				printSysInfo(msg.content);
 			} else if (msg.type == 12) {
@@ -174,17 +193,10 @@ public class Client {
 			}
 		}
 
-		try {
-			// sc.close();
-			ois.close();
-			oos.close();
-			s.close();
-		} catch (IOException e) {
-		}
 		if (runningThreadNum != 2) {
-			synchronized (Client.class) {
+			synchronized (dyingSync) {
 				try {
-					Client.class.wait();
+					dyingSync.wait();
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
@@ -192,6 +204,23 @@ public class Client {
 		}
 		threadExit("Client Consumer(Main Thread)");
 		System.exit(0);
+	}
+
+	public static boolean retrieveArgs(String[] args) {
+		if (args.length != 4)
+			return false;
+
+		serverPort = 0;
+		try {
+			serverPort = Integer.parseInt(args[1]);
+		} catch (NumberFormatException e3) {
+			return false;
+		}
+		if (!args[0].matches(IPADDRESS_PATTERN))
+			return false;
+		serverIP = args[0];
+		authStr = args[2] + "/" + args[3];
+		return true;
 	}
 
 	private static Message seekMsg() {
@@ -207,24 +236,23 @@ public class Client {
 	private static void getAddr() {
 		localSocketAddr = s.getLocalSocketAddress().toString();
 		remoteSocketAddr = s.getRemoteSocketAddress().toString();
-		System.out.println("Remote addr: " + remoteSocketAddr);
-		System.out.println("My Socket Addr: " + localSocketAddr);
+		Logger.log("Remote addr: " + remoteSocketAddr);
+		Logger.log("My Socket Addr: " + localSocketAddr);
 	}
 
 	public static synchronized void threadExit(String name) {
-		System.out.println(Thread.currentThread().getName() + " has exited");
-		// System.out.println(name + " has exited");
+		Logger.log(Thread.currentThread().getName() + " has exited");
 		runningThreadNum--;
 		if (runningThreadNum == 2) { // Main and Sc
-			synchronized (Client.class) {
-				Client.class.notify();
+			synchronized (dyingSync) {
+				dyingSync.notify();
 			}
 		}
 	}
 
 	private static void printStopTaskInfo(Message msg) {
-		System.out.println(msg.answer);
-		System.out.println(msg.content);
+		Logger.log(msg.answer);
+		Logger.log(msg.content);
 		gui.backCancelTaskResult(msg);
 	}
 
@@ -282,8 +310,8 @@ public class Client {
 	public static void printTaskStatus(String json) {
 		String msg = formatTaskStatus(json);
 		gui.backTaskStatus(msg);
-		System.out.println(msg);
-		
+		Logger.log(msg);
+
 	}
 
 	private static String formatTaskStatus(String json) {
@@ -329,7 +357,7 @@ public class Client {
 
 	private static void printTaskResult(Message msg) {
 		gui.backTaskResult(msg);
-		System.out.println("Client received a task result: " + msg.content + ": " + msg.answer);
+		Logger.log("Client received a task result: " + msg.content + ": " + msg.answer);
 	}
 
 	public static Message addTaskMsg(String cmd, String timeLimit) {
@@ -339,17 +367,18 @@ public class Client {
 		} catch (NumberFormatException e) {
 			timel = Double.MAX_VALUE;
 		}
+		if(timel<0) timel = Double.MAX_VALUE;
 		Message msg = new Message();
 		msg.type = 1;
 		msg.content = cmd;
 		msg.expiredIn = timel;
-		msg.owner = localSocketAddr;
+		msg.owner = myId;
 
 		synchronized (msgList) {
 			msgList.add(msg);
 		}
-		synchronized (sync) {
-			sync.notify();
+		synchronized (Client.class) {
+			Client.class.notify();
 		}
 		return msg;
 	}
@@ -358,39 +387,54 @@ public class Client {
 		Message msg = new Message();
 		msg.type = 11;
 		msg.content = m.msgID.toString();
-		msg.owner = localSocketAddr;
-
+		msg.owner = myId;
 		synchronized (msgList) {
 			msgList.add(msg);
 		}
-		synchronized (sync) {
-			sync.notify();
+		synchronized (Client.class) {
+			Client.class.notify();
 		}
 	}
 
 	public static void addTaskStatusMsg() {
 		Message msg = new Message();
 		msg.type = 5;
-		msg.owner = localSocketAddr;
-
+		msg.owner = myId;
 		synchronized (msgList) {
 			msgList.add(msg);
 		}
-		synchronized (sync) {
-			sync.notify();
+		synchronized (Client.class) {
+			Client.class.notify();
 		}
 	}
 
 	public static void addSysStatusMsg() {
 		Message msg = new Message();
 		msg.type = 9;
-		msg.owner = localSocketAddr;
-
+		msg.owner = myId;
 		synchronized (msgList) {
 			msgList.add(msg);
 		}
-		synchronized (sync) {
-			sync.notify();
+		synchronized (Client.class) {
+			Client.class.notify();
 		}
+	}
+
+	public static void setArgs(String[] args) {
+		parameters = args;
+	}
+
+	public static void goToDie() {
+		looping = false;
+		try {
+			ois.close();
+			oos.close();
+			s.close();
+		} catch (Exception e) {
+		}
+		synchronized (Client.class) {
+			Client.class.notify();
+		}
+		return;
 	}
 }

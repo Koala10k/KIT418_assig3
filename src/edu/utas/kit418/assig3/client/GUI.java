@@ -4,7 +4,10 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.io.File;
+import java.util.Date;
 
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
@@ -19,12 +22,13 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.WindowConstants;
+import javax.swing.text.DefaultCaret;
 
 import edu.utas.kit418.assig3.common.Message;
 
-public class GUI extends JFrame {
+public class GUI extends JFrame implements WindowListener {
 	private static final long serialVersionUID = 1L;
-	private JTextArea logPane;
+	private JTextArea jLogArea;
 	private JScrollPane jScrollLog;
 	private JPanel controlPane;
 	private JPanel leftPane;
@@ -37,29 +41,36 @@ public class GUI extends JFrame {
 	private JComponent jScrollTask;
 	private DefaultListModel<Message> lstModel = new DefaultListModel<Message>();
 	private JTextField jTxtTimeExpired;
+	private LoginDialog loginDiag;
+	public boolean authenticating;
 
 	public GUI() {
 		setExtendedState(getExtendedState() | JFrame.MAXIMIZED_BOTH);
 		setTitle("Cluster Computing GUI");
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		setIconImage(Toolkit.getDefaultToolkit().getImage("res" + File.separatorChar + "icon.png"));
+		setMinimumSize(new Dimension(800, 600));
 		createComponents();
 		performLayout();
+		loginDiag = new LoginDialog(this);
+		loginDiag.addWindowListener(this);
 	}
 
 	private void createComponents() {
 
-		logPane = new JTextArea();
+		jLogArea = new JTextArea();
 		setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-		logPane.setLineWrap(false);
-		logPane.setWrapStyleWord(true);
-		logPane.setEditable(false);
+		jLogArea.setLineWrap(false);
+		jLogArea.setWrapStyleWord(true);
+		jLogArea.setEditable(false);
+		((DefaultCaret) jLogArea.getCaret()).setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
+
 		jLstTask = new JList<Message>();
 		jLstTask.setModel(lstModel);
 		jLstTask.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 
-		jScrollLog = new JScrollPane(logPane, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		jScrollLog.setBorder(BorderFactory.createTitledBorder("Log"));
+		jScrollLog = new JScrollPane(jLogArea, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		jScrollLog.setBorder(BorderFactory.createTitledBorder("Result"));
 		jScrollTask = new JScrollPane(jLstTask, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		jScrollTask.setBorder(BorderFactory.createTitledBorder("Task List"));
 
@@ -67,25 +78,39 @@ public class GUI extends JFrame {
 		controlPane.setBorder(BorderFactory.createTitledBorder("Options"));
 		leftPane = new JPanel();
 		jBtnClearLog = new JButton("Clear Log");
-		jBtnCancel = new JButton("Cancel");
+		jBtnCancel = new JButton("Cancel Task");
 		jBtnTs = new JButton("Task Status");
 		jBtnSs = new JButton("Server Info");
 		jTxtCmd = new JTextField();
 		jTxtCmd.setToolTipText("input command here");
+		jTxtCmd.setBorder(BorderFactory.createTitledBorder("Command"));
 		jTxtTimeExpired = new JTextField();
 		jTxtTimeExpired.setToolTipText("set time limit (s)");
+		jTxtTimeExpired.setBorder(BorderFactory.createTitledBorder("Time Limit"));
 
 		jTxtCmd.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				String cmd = e.getActionCommand();
-				if (e.equals(""))
+				if (cmd.equals("test")) {
+					doTest();
+					return;
+				}
+				if (cmd.equals(""))
 					return;
 				Message msg = Client.addTaskMsg(cmd, jTxtTimeExpired.getText());
 				addTaskGUI(msg);
 				jTxtCmd.setText("");
-				log("sent a task: " + cmd);
+			}
+
+			private void doTest() {
+				double[] expTime = new double[]{Double.MAX_VALUE, 1000,800,600,500,400,200,100,0,Double.MAX_VALUE};
+				for(int i=1;i<=10;i++){
+					Message msg = Client.addTaskMsg("task"+i, String.valueOf(expTime[i-1]));
+					addTaskGUI(msg);
+				}
+				jTxtCmd.setText("");
 			}
 		});
 
@@ -93,7 +118,7 @@ public class GUI extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				logPane.setText("");
+				jLogArea.setText("");
 			}
 		});
 
@@ -103,7 +128,7 @@ public class GUI extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				int[] selectedIdx = jLstTask.getSelectedIndices();
 				if (selectedIdx.length == 0) {
-					log("select one or muptile item");
+					log("select one or muptile tasks");
 				} else {
 					for (int idx : selectedIdx) {
 						Message msg = lstModel.getElementAt(idx);
@@ -133,9 +158,6 @@ public class GUI extends JFrame {
 	}
 
 	private void performLayout() {
-		Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
-		setLocation((int) screenSize.getWidth() / 4, (int) screenSize.getHeight() / 4);
-
 		GroupLayout optLayout = new GroupLayout(controlPane);
 		controlPane.setLayout(optLayout);
 		optLayout.setAutoCreateContainerGaps(false);
@@ -156,8 +178,8 @@ public class GUI extends JFrame {
 		leftLayout.setHorizontalGroup(leftLayout
 				.createParallelGroup(GroupLayout.Alignment.CENTER)
 				.addGroup(
-						leftLayout.createSequentialGroup().addComponent(jTxtCmd, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE)
-								.addComponent(jTxtTimeExpired, 100, 100, 100)).addComponent(jScrollTask, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE, Short.MAX_VALUE)
+						leftLayout.createSequentialGroup().addComponent(jTxtCmd, 200, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE)
+								.addComponent(jTxtTimeExpired, GroupLayout.DEFAULT_SIZE, 100, 100)).addComponent(jScrollTask, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE, Short.MAX_VALUE)
 				.addComponent(jScrollLog, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE, Short.MAX_VALUE));
 
 		leftLayout.setVerticalGroup(leftLayout
@@ -171,19 +193,20 @@ public class GUI extends JFrame {
 		layout.setAutoCreateContainerGaps(false);
 		layout.setAutoCreateGaps(false);
 
-		layout.setHorizontalGroup(layout.createSequentialGroup().addComponent(leftPane, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE, Short.MAX_VALUE).addComponent(controlPane, 300, 300, 300));
+		layout.setHorizontalGroup(layout.createSequentialGroup().addComponent(leftPane, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE, Short.MAX_VALUE).addComponent(controlPane, 150, 150, 200));
 
 		layout.setVerticalGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING).addComponent(leftPane).addComponent(controlPane));
 		pack();
 	}
 
 	public void log(String info) {
-		logPane.append(info);
-		logPane.append("\n");
+		jLogArea.append(info);
+		jLogArea.append("\n");
 	}
 
 	private void addTaskGUI(Message msg) {
 		lstModel.addElement(msg);
+		jLstTask.ensureIndexIsVisible(lstModel.indexOf(msg));
 	}
 
 	public void backCancelTaskResult(Message msg) {
@@ -209,7 +232,9 @@ public class GUI extends JFrame {
 				break;
 			}
 		}
+		long time = new Date().getTime();
 		log("Client received a task result: " + msg.content + ": " + msg.answer);
+		log("time elapsed: " + (time - msg.buildTime) / 1000 + "s");
 	}
 
 	public void backTaskStatus(String msg) {
@@ -218,6 +243,57 @@ public class GUI extends JFrame {
 
 	public void backSysInfo(String msg) {
 		log(msg);
+	}
+
+	public void promptErr(String msg) {
+		loginDiag.invalidArgs(msg);
+		setEnabled(true);
+		loginDiag.setVisible(true);
+		setEnabled(false);
+	}
+
+	public void authenticated(boolean auth) {
+		loginDiag.login(auth);
+		if (auth)
+			setEnabled(true);
+	}
+
+	@Override
+	public void windowOpened(WindowEvent e) {
+
+	}
+
+	@Override
+	public void windowClosing(WindowEvent e) {
+		if (e.getSource() == GUI.this || (!authenticating && e.getSource() == loginDiag)) {
+			Client.goToDie();
+			setEnabled(false);
+			Client.guiRunning = false;
+		}
+	}
+
+	@Override
+	public void windowClosed(WindowEvent e) {
+	}
+
+	@Override
+	public void windowIconified(WindowEvent e) {
+
+	}
+
+	@Override
+	public void windowDeiconified(WindowEvent e) {
+
+	}
+
+	@Override
+	public void windowActivated(WindowEvent e) {
+
+	}
+
+	@Override
+	public void windowDeactivated(WindowEvent e) {
+
 	}
 
 }

@@ -19,14 +19,10 @@ public class Node {
 
 	public static void main(String[] args) throws Exception {
 		// ip port
-		// DEBUG:
-//		args = new String[] { "127.0.0.1", "4444" };
-//		args = new String[] { "104.19.134.113", "4444" };
 		if (args.length != 2) {
-			System.err.println("Invaid args");
-			System.exit(1);
+			System.err.println("Invaid args, using default configuration: 127.0.0.1, 4444");
+			args = new String[] { "127.0.0.1", "4444" };
 		}
-
 		int serverPort = 0;
 		try {
 			serverPort = Integer.parseInt(args[1]);
@@ -47,7 +43,7 @@ public class Node {
 		CpuInfo cpuInfo = sigar.getCpuInfoList()[0];
 		int totalCore = cpuInfo.getCoresPerSocket() * cpuInfo.getTotalSockets();
 		int totalWorker = totalCore < 2 ? 2 : totalCore;
-		//DEBUG 
+		// DEBUG
 		totalWorker = 2;
 		runningThreadNum = totalWorker + 2;
 
@@ -96,7 +92,7 @@ public class Node {
 
 	public static synchronized void threadExit(String name) {
 		System.out.println(Thread.currentThread().getName() + " has exited");
-//		System.out.println(name + " has exited");
+		// System.out.println(name + " has exited");
 		runningThreadNum--;
 		if (runningThreadNum == 1) {
 			synchronized (Node.sSync) {

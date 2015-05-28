@@ -59,10 +59,10 @@ public class ThreadWorker implements Runnable {
 			msg.type = 2;
 			msg.answer = rst;
 
-			long sleepTime = (long) (1000 + Math.random() * 4000);
-			log("will sleep for " + sleepTime + "ms");
+//			long sleepTime = (long) (1000 + Math.random() * 4000);
+//			log("will sleep for " + sleepTime + "ms");
 			try {
-				Thread.sleep(10000);
+				Thread.sleep(3000);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}

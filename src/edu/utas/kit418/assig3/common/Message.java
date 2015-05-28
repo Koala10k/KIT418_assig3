@@ -1,6 +1,7 @@
 package edu.utas.kit418.assig3.common;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.UUID;
 
 import org.json.simple.JSONObject;
@@ -12,6 +13,7 @@ public class Message implements Serializable {
 	public Message() {
 		expiredIn = Double.MAX_VALUE;
 		msgID = UUID.randomUUID();
+		buildTime = new Date().getTime();
 	}
 
 	public String from;
@@ -25,14 +27,16 @@ public class Message implements Serializable {
 	// 5: ClientTaskStatusRst
 	// 6: ServerAuthRst
 	// 7: ClientAuthRsp
-	// 8: ClientTaskStatusRsp
+	// 8: ServerTaskStatusRsp
 	// 9: ClientSysInfoRst
 	// 10: ServerSysInfoRsp
 	// 11: ClientCancelTaskRst
 	// 12: ServerCancelTaskRsp
+	// 13: ServerAuthRsp
 	public String content;
 	public String answer;
 
+	public double buildTime;
 	public double expiredIn;
 	public NodeInfo nodeInfo;
 
