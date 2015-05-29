@@ -25,10 +25,10 @@ public class JCloudsNova implements Closeable {
 	private final static int MAX = 2;
 	private static int curNum = 1;
 
-	public static void createNewNode(String[] args) throws IOException {
+	public static void createNewNode(String[] args) throws Exception {
 		if (curNum == MAX) {
 			System.out.println("NodeCreater: MAX amount of Nodes has been created");
-			return;
+			throw new Exception();
 		}
 		JCloudsNova jcloudsNova = new JCloudsNova();
 		try {
@@ -36,7 +36,7 @@ public class JCloudsNova implements Closeable {
 			jcloudsNova.createServer();
 			jcloudsNova.close();
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw e;
 		} finally {
 			jcloudsNova.close();
 		}

@@ -231,6 +231,9 @@ public class NodeService implements Runnable {
 		synchronized (Server.runningTaskList) {
 			Server.runningTaskList.removeAll(tmp);
 		}
+		for (Message m : tmp) {
+			Server.addTaskMsgByPriority(m);
+		}
 		log(tmp.size() + " task(s) have been re-scheduled");
 	}
 

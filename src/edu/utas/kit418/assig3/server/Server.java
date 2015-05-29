@@ -240,7 +240,7 @@ public class Server {
 			log("starting a remote node...");
 			try {
 				JCloudsNova.createNewNode(null);
-			} catch (IOException e) {
+			} catch (Exception e) {
 				log("fail to start a remote node");
 				startingNumDown1();
 			}
